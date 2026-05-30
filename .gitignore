@@ -1,0 +1,52 @@
+# ════════════════════════════════════════════
+# Velour — .gitignore
+# NEVER commit secrets or generated files
+# ════════════════════════════════════════════
+
+# ── Environment Files (CRITICAL — contains API keys) ──
+.env
+.env.local
+.env.production
+server/.env
+
+# ── Python ────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+.venv/
+env/
+*.egg
+
+# ── Node / Frontend ───────────────────────────
+node_modules/
+client/node_modules/
+client/dist/
+client/.vite/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Chat Logs (may contain PII) ───────────────
+server/logs/
+*.jsonl
+
+# ── IDE ───────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+
+# Google credentials — NEVER commit
+server/config/google_credentials.json
+server/.env

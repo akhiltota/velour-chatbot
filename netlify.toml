@@ -1,0 +1,32 @@
+# netlify.toml
+# ─────────────
+# Netlify deployment config for the Velour React frontend.
+# The [[redirects]] block proxies /api/* to your Render/Railway backend,
+# avoiding CORS issues in production.
+
+[build]
+  base    = "client"
+  publish = "dist"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# ── SPA Routing ───────────────────────────────
+# Redirect all non-file requests to index.html (required for React Router)
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
+
+# ── API Proxy ─────────────────────────────────
+# Proxies /api/* → your backend on Render/Railway
+# Replace the `to` URL with your actual deployed backend URL
+[[redirects]]
+  from   = "/api/*"
+  to     = "https://velour-api.onrender.com/api/:splat"
+  status = 200
+  force  = true
+
+  [redirects.headers]
+    X-From = "Netlify"
