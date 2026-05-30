@@ -1,8 +1,7 @@
 """
 routes/health.py
 ─────────────────
-GET /api/health — used by Render/Railway health checks and uptime monitors.
-Returns environment info (without secrets).
+GET /api/health — used by Render health checks and uptime monitors.
 """
 
 from fastapi import APIRouter
@@ -16,7 +15,7 @@ async def health():
     return {
         "status": "ok",
         "service": "Velour AI Chatbot API",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "environment": settings.ENVIRONMENT,
-        "ai_configured": bool(settings.ANTHROPIC_API_KEY),
+        "ai_configured": bool(settings.OPENAI_API_KEY),
     }
