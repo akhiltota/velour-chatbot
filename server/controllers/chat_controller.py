@@ -1,3 +1,16 @@
+import logging
+import re
+from typing import Optional
+
+from services.lead_service import (
+    make_lead, apply_score, finalize_lead,
+    extract_lead_with_ai, save_lead_to_file,
+)
+from services.sheets_service import push_lead_to_sheets
+from services.chat_logger import chat_logger
+from utils.validators import sanitise_text
+from config.settings import settings
+
 async def process_message(
     session_id: str,
     user_message: str,
