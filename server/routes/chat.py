@@ -136,6 +136,43 @@ async def chat_stream(body: ChatRequest, request: Request):
         )
 
     # ── Build messages for NIM ──────────────────────────────────────────
+
+    # ── Intercept email/CTA intent before streaming ──────────────────
+    email_intent_phrases = [
+        "send to my email", "send recommendations to my email",
+        "email me", "send to email", "send personalised",
+        "get personalised", "get personalized", "please send",
+    ]
+    if (
+        any(phrase in clean_msg.lower() for phrase in email_intent_phrases)
+        and not lead.get("email")
+        and (not capture_stage or capture_stage == "done")
+    ):
+        session["lead_capture_stage"] = "name"
+        scripted = "I'd love to send those to you! 😊 What's your name so I can personalise it for you?"
+
+        async def email_intent_stream():
+            words = scripted.split(" ")
+            for i, word in enumerate(words):
+                chunk = word + (" " if i < len(words) - 1 else "")
+                yield f"data: {json.dumps({'token': chunk})}\n\n"
+            result = await process_message(
+                session_id=session_id,
+                user_message=body.message,
+                ip_address=ip,
+                ai_reply=scripted,
+            )
+            meta = {k: v for k, v in result.items() if k != "reply"}
+            meta["session_id"] = session_id
+            yield f"data: {json.dumps({'done': True, 'meta': meta})}\n\n"
+
+        return StreamingResponse(
+            email_intent_stream(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        )
+
+
     history  = session.get("history", [])[-(settings.MAX_CONVERSATION_TURNS * 2):]
     messages = [
         {
