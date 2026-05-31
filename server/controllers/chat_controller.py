@@ -255,7 +255,8 @@ async def process_message(
         }
 
     # ── Lead capture sub-flow ─────────────────
-    if session.get("lead_capture_stage") and session["lead_capture_stage"] != "done":
+    # Skip when ai_reply is set (post-stream update — lead capture already handled)
+    if not ai_reply and session.get("lead_capture_stage") and session["lead_capture_stage"] != "done":
         result = await process_lead_capture_message(session, clean_msg, ip_address)
         if result:
             chat_logger.log(
